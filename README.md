@@ -1,85 +1,82 @@
-# Xtele – Netzwerk-synchronisierter Teleprompter
+# Xtele – Network-Synced Browser Teleprompter
 
-Ein Teleprompter, der im Browser läuft und sich über alle Geräte im selben
-Netzwerk synchronisiert (z. B. PC ↔ Fire Tablet). Text laden und Scrollen
-werden per WebSocket in Echtzeit an alle verbundenen Browser übertragen –
-so kannst du dich vom Tablet/der Kamera abwenden und am PC an derselben
-Stelle weitermachen.
+A self-hosted, browser-based teleprompter that keeps every connected device — PC, Fire Tablet, phone, whatever's on your LAN — perfectly in sync. Load a script once and it instantly appears everywhere; scroll on any device (mouse, touch, keyboard, or a Bluetooth/USB remote) and every other screen scrolls along in real time. Built for creators who need to step away from the camera rig and keep controlling the script from their PC, with horizontal/vertical mirroring for beam-splitter glass attachments and flexible remote-control key mapping (keyboard, gamepad, and generic HID) built right in.
 
-## Funktionen
+## Features
 
-- **Text-Sync**: `.txt`-Datei laden → erscheint sofort auf allen verbundenen Geräten.
-- **Scroll-Sync**: Scrollen (Maus, Touch, Pfeiltasten) auf einem Gerät scrollt alle anderen Geräte mit (relative, inhaltsbezogene Position – funktioniert auch bei unterschiedlichen Bildschirmgrößen und bei aktivierter vertikaler Spiegelung).
-- **Auto-Scroll**: Einstellbare Geschwindigkeit (auch bei sehr niedrigen Werten ruckelfrei), Start/Pause per Button, Leertaste oder Fernbedienung.
-- **Spiegeln**: horizontale (und optional vertikale) Spiegelung für Prompter-Aufsätze/Beamsplitter-Glas – **pro Gerät lokal**, wird nicht mitsynchronisiert (i. d. R. braucht nur das Gerät im Prompter-Rig die Spiegelung).
-- **Fernbedienung**: Frei zuweisbare Tasten-/Gamepad-Belegung für Bluetooth-/USB-Fernbedienungen – jede Aktion kann mehrere Tasten gleichzeitig haben (z. B. Leertaste **und** ein Fernbedienungs-Button für Play/Pause). Siehe Abschnitt unten.
-- **Räume**: Mehrere unabhängige Sync-Gruppen über `?room=NAME` in der URL.
+- **Text sync**: Load a `.txt` file → it instantly appears on every connected device.
+- **Scroll sync**: Scrolling (mouse, touch, arrow keys) on one device scrolls all others (relative, content-based position – works across different screen sizes and even with vertical mirroring enabled).
+- **Auto-scroll**: Adjustable speed (smooth even at very low values), start/pause via button, spacebar, or remote control.
+- **Mirroring**: Horizontal (and optionally vertical) mirroring for prompter attachments/beam-splitter glass – **local per device**, not synced (usually only the device in the prompter rig needs mirroring).
+- **Remote control**: Freely assignable key/gamepad bindings for Bluetooth/USB remotes – each action can have multiple bindings at once (e.g. spacebar **and** a remote button for Play/Pause). See section below.
+- **Rooms**: Multiple independent sync groups via `?room=NAME` in the URL.
 
 ## Installation
 
-Voraussetzung: [Node.js](https://nodejs.org/) (Version 18+).
+Requirement: [Node.js](https://nodejs.org/) (version 18+).
 
 ```powershell
 npm install
 npm start
 ```
 
-Die Konsole zeigt danach z. B.:
+The console will then show something like:
 
 ```
-Teleprompter-Server läuft auf http://localhost:3000
-  -> im Netzwerk erreichbar unter: http://192.168.1.42:3000
+Teleprompter server running at http://localhost:3000
+  -> reachable on the network at: http://192.168.1.42:3000
 ```
 
-## Nutzung mit PC + Fire Tablet
+## Usage with PC + Fire Tablet
 
-1. Server auf dem PC starten (`npm start`). PC und Fire Tablet müssen im **gleichen WLAN** sein.
-2. Am PC im Browser `http://<PC-IP>:3000` öffnen (die IP steht in der Konsole).
-3. Auf dem Fire Tablet den **Silk-Browser** (oder Chrome/Firefox) öffnen und dieselbe Adresse aufrufen.
-4. Optional: Im Feld „Raum / Gerätegruppe“ auf beiden Geräten denselben Namen eintragen und „Beitreten“ klicken (praktisch, wenn mehrere Teleprompter-Setups im selben Netz laufen). Standardmäßig sind alle im Raum `default`.
-5. Text einfügen oder Datei laden → „An alle senden“ klicken.
-6. Auf dem Tablet ggf. „Text spiegeln“ aktivieren (nur lokal), Vollbild aktivieren, Tablet in den Prompter-Aufsatz einsetzen.
-7. Am PC weiterscrollen (Maus, Pfeiltasten, Auto-Scroll) – das Tablet folgt automatisch. Genauso funktioniert es umgekehrt.
+1. Start the server on the PC (`npm start`). PC and Fire Tablet must be on the **same Wi-Fi**.
+2. On the PC, open `http://<PC-IP>:3000` in a browser (the IP is shown in the console).
+3. On the Fire Tablet, open the **Silk browser** (or Chrome/Firefox) and go to the same address.
+4. Optional: Enter the same name in the "Room / device group" field on both devices and click "Join" (useful when several teleprompter setups run on the same network). By default everyone is in the `default` room.
+5. Paste text or load a file → it's sent to all devices automatically.
+6. On the tablet, enable "Mirror text" if needed (local only), enable fullscreen, and place the tablet in the prompter rig.
+7. Keep scrolling on the PC (mouse, arrow keys, auto-scroll) – the tablet follows automatically. It works the other way around too.
 
 ### Firewall
 
-Falls das Tablet den PC nicht erreicht: Windows-Firewall muss eingehende Verbindungen auf dem verwendeten Port (Standard `3000`) für Node.js/das private Netzwerk erlauben.
+If the tablet can't reach the PC: the Windows Firewall must allow incoming connections on the port used (default `3000`) for Node.js/the private network.
 
-## Tastatur-Shortcuts
+## Keyboard shortcuts
 
-| Taste | Aktion |
+| Key | Action |
 | --- | --- |
-| Leertaste | Auto-Scroll starten/pausieren |
-| Pfeil hoch/runter | manuell scrollen |
-| Home | zum Anfang springen |
+| Spacebar | Start/pause auto-scroll |
+| Arrow up/down | Scroll manually |
+| Home | Jump to the start |
 
-Diese Standardbelegung lässt sich im Bereich „Fernbedienung“ jederzeit ändern oder erweitern.
+This default binding can be changed or extended anytime in the "Remote control" section.
 
-## Fernbedienungen (Bluetooth/USB, z. B. Desview)
+## Remote controls (Bluetooth/USB, e.g. Desview)
 
-Viele Fernbedienungen (auch die von Desview) sprechen mit ihrer offiziellen App über ein herstellereigenes, proprietäres Bluetooth-Profil – der Browser kann das nicht direkt auslesen. Praktisch meldet sich die Hardware aber oft trotzdem als **Standard-HID-Gerät** beim Betriebssystem an, entweder als Tastatur oder – wie bei getesteten Desview-Remotes – als generisches **Gamepad**. Xtele erkennt beide Varianten:
+Many remotes (including Desview's) talk to their official app over a vendor-specific, proprietary Bluetooth profile – the browser can't read that directly. In practice, though, the hardware often still announces itself to the OS as a **standard HID device**, either as a keyboard or – as tested with Desview remotes – as a generic **gamepad**. Xtele detects both:
 
-1. Fernbedienung **nicht** in der Hersteller-App, sondern in den **Bluetooth-Einstellungen** des Geräts (Windows/Fire OS/Android) koppeln.
-2. Im Bereich „Fernbedienung“ bei einer Aktion auf **„+ Taste zuweisen“** klicken und den gewünschten Knopf drücken – Tastatur- und Gamepad-Tasten werden automatisch erkannt und als Chip angezeigt (mit „×“ zum Entfernen).
-3. Jede Aktion kann **mehrere** Tasten/Buttons gleichzeitig haben (z. B. Leertaste am PC **und** ein Fernbedienungs-Button).
+1. Pair the remote **not** in the manufacturer's app, but in the device's **Bluetooth settings** (Windows/Fire OS/Android).
+2. In the "Remote control" section, click **"+ Assign key"** next to an action and press the desired button – keyboard and gamepad keys are detected automatically and shown as a chip (with "×" to remove).
+3. Each action can have **multiple** keys/buttons at once (e.g. spacebar on the PC **and** a remote button).
 
-### Diagnose
+### Diagnostics
 
-Wird nichts erkannt, hilft der Abschnitt „Fernbedienungs-Diagnose“:
+If nothing is detected, the "Remote control diagnostics" section helps:
 
-- Jeder Tastatur- und Gamepad-Tastendruck wird live geloggt.
-- „Rohes HID-Gerät verbinden“ nutzt die WebHID-API, um rohe Eingabe-Reports zu inspizieren (nur Chrome/Edge, benötigt HTTPS **oder** `http://localhost:...` – nicht die LAN-IP).
-- Kommt in Notepad/einem Textfeld beim Drücken der Fernbedienung ebenfalls nichts an, sendet das Gerät keine Standard-HID-Reports und lässt sich ohne Reverse-Engineering des Herstellerprotokolls nicht integrieren.
+- Every keyboard and gamepad button press is logged live.
+- "Connect raw HID device" uses the WebHID API to inspect raw input reports (Chrome/Edge only, requires HTTPS **or** `http://localhost:...` – not the LAN IP).
+- If nothing shows up in Notepad/a text field when pressing the remote either, the device isn't sending standard HID reports and can't be integrated without reverse-engineering the manufacturer's protocol.
 
-## Konfiguration
+## Configuration
 
-- Port ändern: Umgebungsvariable `PORT` setzen, z. B. `PORT=8080 npm start`.
+- Change the port: set the `PORT` environment variable, e.g. `PORT=8080 npm start`.
 
-## Architektur
+## Architecture
 
-- `server.js`: Express liefert die statischen Dateien aus `public/`; ein WebSocket-Endpunkt (`/ws`) verteilt Text- und Scroll-Events an alle Clients im selben Raum und merkt sich den letzten Stand für neu beitretende Geräte.
-- `public/app.js`: Verbindet sich per WebSocket, sendet Text-/Scroll-Änderungen (gedrosselt), wendet empfangene Updates an, verwaltet lokale Anzeige-Einstellungen (Schriftgröße, Spiegelung, Auto-Scroll-Geschwindigkeit) über `localStorage` und erkennt Fernbedienungen über Tastatur-Events, die Gamepad-API und optional WebHID.
+- `server.js`: Express serves the static files from `public/`; a WebSocket endpoint (`/ws`) relays text and scroll events to all clients in the same room and remembers the latest state for newly joining devices.
+- `public/app.js`: Connects via WebSocket, sends text/scroll changes (throttled), applies incoming updates, manages local display settings (font size, mirroring, auto-scroll speed) via `localStorage`, and detects remote controls via keyboard events, the Gamepad API, and optionally WebHID.
 
-## Mitwirken
+## Contributing
 
-Issues und Pull Requests sind willkommen. Das Projekt hat keine Build-Pipeline – Änderungen an `public/*` sind nach einem Browser-Reload sofort sichtbar, ein Serverneustart ist nur bei Änderungen an `server.js` nötig.
+Issues and pull requests are welcome. The project has no build pipeline – changes to `public/*` are visible immediately after a browser reload; a server restart is only needed for changes to `server.js`.
+

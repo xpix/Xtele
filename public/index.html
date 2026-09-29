@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -12,98 +12,98 @@
       <div class="panel-header">
         <h1>Xtele Teleprompter</h1>
         <div class="header-buttons">
-          <button id="fullscreenBtn" title="Vollbild">⛶</button>
-          <button id="togglePanelBtn" title="Bedienfeld ausblenden">⮜</button>
+          <button id="fullscreenBtn" title="Fullscreen">⛶</button>
+          <button id="togglePanelBtn" title="Hide panel">⮜</button>
         </div>
       </div>
 
       <section class="field">
-        <label for="roomInput">Raum / Gerätegruppe</label>
+        <label for="roomInput">Room / device group</label>
         <div class="row">
           <input id="roomInput" type="text" spellcheck="false" />
-          <button id="applyRoomBtn">Beitreten</button>
+          <button id="applyRoomBtn">Join</button>
         </div>
-        <p class="hint">Alle Geräte mit demselben Raumnamen werden synchronisiert. Diese Seite auf PC &amp; Fire Tablet mit gleichem Raumnamen öffnen.</p>
-        <p id="status" class="status disconnected">● nicht verbunden</p>
+        <p class="hint">All devices with the same room name are synced. Open this page on PC &amp; Fire Tablet with the same room name.</p>
+        <p id="status" class="status disconnected">● not connected</p>
       </section>
 
       <section class="field">
-        <label for="fileInput">Text-Datei laden</label>
+        <label for="fileInput">Load text file</label>
         <input id="fileInput" type="file" accept=".txt,text/plain" />
-        <p id="loadedFileName" class="hint">Keine Datei geladen.</p>
+        <p id="loadedFileName" class="hint">No file loaded.</p>
       </section>
 
       <section class="field">
-        <label>Schrift &amp; Anzeige (nur lokal, nicht synchronisiert)</label>
+        <label>Font &amp; display (local only, not synced)</label>
         <div class="row slider-row">
-          <span>Schriftgröße</span>
+          <span>Font size</span>
           <input id="fontSizeSlider" type="range" min="16" max="120" value="48" />
           <span id="fontSizeValue">48px</span>
         </div>
         <div class="row slider-row">
-          <span>Zeilenabstand</span>
+          <span>Line height</span>
           <input id="lineHeightSlider" type="range" min="100" max="220" value="140" />
           <span id="lineHeightValue">1.4</span>
         </div>
         <label class="checkbox">
           <input id="mirrorCheckbox" type="checkbox" />
-          Text spiegeln (für Prompter-/Beamsplitter-Aufsatz)
+          Mirror text (for prompter/beam-splitter attachment)
         </label>
         <label class="checkbox">
           <input id="flipVCheckbox" type="checkbox" />
-          Zusätzlich vertikal spiegeln
+          Also flip vertically
         </label>
         <label class="checkbox">
           <input id="guideLineCheckbox" type="checkbox" checked />
-          Lesehilfslinie anzeigen
+          Show reading guide line
         </label>
       </section>
 
       <section class="field">
-        <label>Auto-Scroll</label>
+        <label>Auto-scroll</label>
         <div class="row slider-row">
-          <span>Geschwindigkeit</span>
+          <span>Speed</span>
           <input id="speedSlider" type="range" min="2" max="200" value="40" />
           <span id="speedValue">40 px/s</span>
         </div>
         <div class="row">
           <button id="playBtn">▶ Start</button>
-          <button id="topBtn">⤒ Zum Anfang</button>
+          <button id="topBtn">⤒ Go to start</button>
         </div>
       </section>
 
       <section class="field">
-        <label>Fernbedienung</label>
+        <label>Remote control</label>
         <p class="hint">
-          Dein Desview-Remote wurde als generisches HID-Gerät erkannt (nicht als Tastatur, sondern über die Gamepad-API). Klicke unten bei einer Aktion auf „Zuweisen“ und drücke dann den gewünschten Knopf auf der Fernbedienung – Tastatur- <em>und</em> Gamepad-Tasten werden automatisch erkannt.
+          Your Desview remote was detected as a generic HID device (not as a keyboard, but via the Gamepad API). Click "Assign" next to an action below and press the desired button on the remote – keyboard <em>and</em> gamepad keys are detected automatically.
         </p>
         <div id="remoteMappingList" class="mapping-list"></div>
         <div class="row">
-          <button id="resetMappingBtn">Zuordnung zurücksetzen</button>
+          <button id="resetMappingBtn">Reset mapping</button>
         </div>
-        <p id="lastKeyHint" class="hint">Letzter erkannter Tastendruck: –</p>
+        <p id="lastKeyHint" class="hint">Last detected keypress: –</p>
       </section>
 
       <section class="field">
-        <label>Fernbedienungs-Diagnose</label>
+        <label>Remote control diagnostics</label>
         <p class="hint">
-          Kommt hier gar nichts an: Teste zuerst in einem normalen Textfeld (z. B. Notepad oder das Raum-Feld oben), ob beim Drücken überhaupt etwas erscheint. Kommt dort auch nichts an, sendet das Gerät vermutlich keine Standard-Tastatursignale, sondern nur sein eigenes Bluetooth-Profil an die Desview-App.
+          Nothing detected here? First test in a normal text field (e.g. Notepad or the room field above) whether anything appears at all when pressing a button. If nothing shows up there either, the device probably doesn't send standard keyboard signals, only its own Bluetooth profile to the Desview app.
         </p>
         <div class="row">
-          <button id="connectHidBtn">Rohes HID-Gerät verbinden (Chrome, nur localhost/HTTPS)</button>
+          <button id="connectHidBtn">Connect raw HID device (Chrome, localhost/HTTPS only)</button>
         </div>
         <div id="remoteDebugLog" class="debug-log"></div>
       </section>
 
     </aside>
 
-    <button id="showPanelBtn" title="Bedienfeld einblenden">⮞</button>
-    <button id="fullscreenFloatBtn" title="Vollbild">⛶</button>
+    <button id="showPanelBtn" title="Show panel">⮞</button>
+    <button id="fullscreenFloatBtn" title="Fullscreen">⛶</button>
 
     <main id="stage">
       <div id="guideLine"></div>
       <div id="prompter">
-        <div id="prompterInner"><p class="empty-hint">Noch kein Text geladen. Öffne das Bedienfeld links und lade eine Textdatei.</p></div>
+        <div id="prompterInner"><p class="empty-hint">No text loaded yet. Open the panel on the left and load a text file.</p></div>
       </div>
     </main>
   </div>

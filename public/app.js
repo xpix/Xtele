@@ -31,7 +31,7 @@
   const remoteDebugLog = $('remoteDebugLog');
   const connectHidBtn = $('connectHidBtn');
 
-  // ---------- Diagnose-Log für Fernbedienungen ----------
+  // ---------- Remote control diagnostic log ----------
   function logDebug(line) {
     const entry = document.createElement('div');
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${line}`;
@@ -41,7 +41,7 @@
     }
   }
 
-  // ---------- Raum aus URL lesen/schreiben ----------
+  // ---------- Read/write room from URL ----------
   function getRoomFromUrl() {
     const params = new URLSearchParams(location.search);
     return params.get('room') || 'default';
@@ -56,7 +56,7 @@
   let currentRoom = getRoomFromUrl();
   roomInput.value = currentRoom;
 
-  // ---------- Lokale, nicht synchronisierte Anzeige-Einstellungen ----------
+  // ---------- Local, non-synced display settings ----------
   function loadLocalSettings() {
     try {
       const raw = localStorage.getItem('xtele-settings');
@@ -109,7 +109,7 @@
     });
   });
 
-  // ---------- Panel ein-/ausblenden ----------
+  // ---------- Show/hide panel ----------
   togglePanelBtn.addEventListener('click', () => {
     panel.classList.add('hidden');
     showPanelBtn.classList.add('visible');
@@ -129,7 +129,7 @@
   fullscreenBtn.addEventListener('click', toggleFullscreen);
   fullscreenFloatBtn.addEventListener('click', toggleFullscreen);
 
-  // ---------- WebSocket-Verbindung ----------
+  // ---------- WebSocket connection ----------
   let ws = null;
   let reconnectTimer = null;
   let applyingRemoteScroll = false;
@@ -137,7 +137,7 @@
   let pendingScrollRatio = null;
 
   function setStatus(connected) {
-    statusEl.textContent = connected ? '● verbunden' : '● nicht verbunden';
+    statusEl.textContent = connected ? '● connected' : '● not connected';
     statusEl.classList.toggle('connected', connected);
     statusEl.classList.toggle('disconnected', !connected);
   }
@@ -187,13 +187,13 @@
     }
   }
 
-  // ---------- Text setzen/senden ----------
+  // ---------- Set/send text ----------
   function setPrompterText(text) {
     prompterInner.textContent = text && text.trim().length
       ? text
       : '';
     if (!text || !text.trim().length) {
-      prompterInner.innerHTML = '<p class="empty-hint">Noch kein Text geladen. Öffne das Bedienfeld links und lade eine Textdatei.</p>';
+      prompterInner.innerHTML = '<p class="empty-hint">No text loaded yet. Open the panel on the left and load a text file.</p>';
     }
   }
 
@@ -203,7 +203,7 @@
     const reader = new FileReader();
     reader.onload = () => {
       const text = String(reader.result || '');
-      loadedFileNameEl.textContent = `Geladen: ${file.name}`;
+      loadedFileNameEl.textContent = `Loaded: ${file.name}`;
       setPrompterText(text);
       send({ type: 'text', content: text });
       applyScrollRatio(0);
@@ -212,10 +212,10 @@
     reader.readAsText(file, 'utf-8');
   });
 
-  // ---------- Scroll-Sync ----------
-  // Bei vertikaler Spiegelung vertauscht der Bildschirm oben/unten, daher wird
-  // die gesendete/empfangene Ratio immer auf den Inhalt (0=Anfang, 1=Ende)
-  // bezogen, unabhängig von der lokalen Spiegel-Einstellung.
+  // ---------- Scroll sync ----------
+  // Vertical mirroring swaps top/bottom on screen, so the sent/received ratio
+  // always refers to the content (0=start, 1=end), independent of the local
+  // mirror setting.
   function localRatioToContentRatio(rawRatio) {
     return flipVCheckbox.checked ? 1 - rawRatio : rawRatio;
   }
@@ -274,7 +274,7 @@
   // ---------- Auto-Scroll ----------
   let playing = false;
   let lastFrameTime = null;
-  let scrollRemainder = 0; // Bruchteil-Pixel, die zwischen Frames übertragen werden
+  let scrollRemainder = 0; // fractional pixels carried over between frames
 
   function tick(timestamp) {
     if (!playing) return;
@@ -285,9 +285,9 @@
     const speed = Number(speedSlider.value);
     const maxScroll = prompter.scrollHeight - prompter.clientHeight;
     if (maxScroll > 0) {
-      // scrollTop rundet auf ganze Pixel, daher Bruchteile separat mitführen –
-      // sonst bleibt der Prompter bei niedriger Geschwindigkeit stehen, weil
-      // jede Nachkomma-Bewegung durch das Runden sofort wieder verloren geht.
+      // scrollTop rounds to whole pixels, so fractions are tracked separately –
+      // otherwise the prompter would stall at low speed because every
+      // sub-pixel movement is immediately lost again due to rounding.
       const currentContentPx = currentScrollRatio() * maxScroll;
       const target = Math.min(maxScroll, currentContentPx + scrollRemainder + speed * dt);
       const nextContentPx = Math.floor(target);
@@ -313,19 +313,19 @@
 
   playBtn.addEventListener('click', () => setPlaying(!playing));
 
-  // ---------- Bluetooth-/USB-Fernbedienung (per Tastenzuordnung) ----------
-  // Die Desview-Fernbedienung spricht ein proprietäres Bluetooth-Profil mit der
-  // Desview-App und lässt sich nicht direkt vom Browser auslesen. Koppelt man
-  // sie stattdessen in den Bluetooth-Einstellungen des Geräts (nicht in der
-  // Desview-App) als Tastatur, sendet sie i. d. R. normale Tasten-Events, die
-  // hier pro Aktion frei zugeordnet werden können.
+  // ---------- Bluetooth/USB remote control (via key mapping) ----------
+  // The Desview remote speaks a proprietary Bluetooth profile with the
+  // Desview app and can't be read directly from the browser. If it's paired
+  // instead in the device's Bluetooth settings (not in the Desview app) as a
+  // keyboard, it usually sends normal key events, which can be freely
+  // assigned per action here.
   const remoteActions = [
     { id: 'playPause', label: 'Play / Pause' },
-    { id: 'scrollUp', label: 'Hoch scrollen' },
-    { id: 'scrollDown', label: 'Runter scrollen' },
-    { id: 'speedUp', label: 'Schneller' },
-    { id: 'speedDown', label: 'Langsamer' },
-    { id: 'top', label: 'Zum Anfang' },
+    { id: 'scrollUp', label: 'Scroll up' },
+    { id: 'scrollDown', label: 'Scroll down' },
+    { id: 'speedUp', label: 'Faster' },
+    { id: 'speedDown', label: 'Slower' },
+    { id: 'top', label: 'Go to start' },
   ];
 
   const defaultMapping = {
@@ -346,8 +346,8 @@
     return JSON.parse(JSON.stringify(mapping));
   }
 
-  // ältere gespeicherte Zuordnungen kannten nur eine Bindung pro Aktion
-  // (String oder einzelnes Objekt statt Array) – hier auf Array normalisieren
+  // older saved mappings only had a single binding per action
+  // (string or single object instead of an array) – normalize to an array here
   function normalizeBindings(value) {
     if (Array.isArray(value)) return value;
     if (typeof value === 'string') return [{ type: 'key', code: value }];
@@ -373,7 +373,7 @@
   }
 
   function describeBinding(binding) {
-    return binding.type === 'gamepad' ? `Gamepad-Taste ${binding.button}` : binding.code;
+    return binding.type === 'gamepad' ? `Gamepad button ${binding.button}` : binding.code;
   }
 
   function bindingsEqual(a, b) {
@@ -400,7 +400,7 @@
   let remoteMapping = loadMapping();
   let listeningForAction = null;
 
-  // findet die Aktion, deren Bindungsliste eine passende Bindung enthält
+  // finds the action whose binding list contains a matching binding
   function findActionByBinding(predicate) {
     return Object.keys(remoteMapping).find((key) => (remoteMapping[key] || []).some(predicate));
   }
@@ -430,7 +430,7 @@
 
       const assignBtn = document.createElement('button');
       const isListening = listeningForAction === id;
-      assignBtn.textContent = isListening ? 'Taste/Knopf drücken…' : '+ Taste zuweisen';
+      assignBtn.textContent = isListening ? 'Press a key/button…' : '+ Assign key';
       assignBtn.classList.toggle('listening', isListening);
       assignBtn.addEventListener('click', () => {
         listeningForAction = id;
@@ -447,7 +447,7 @@
       if (!bindings.length) {
         const empty = document.createElement('span');
         empty.className = 'mapping-empty';
-        empty.textContent = 'keine Taste zugewiesen';
+        empty.textContent = 'no key assigned';
         chipRow.appendChild(empty);
       } else {
         bindings.forEach((binding, index) => {
@@ -458,7 +458,7 @@
           const removeBtn = document.createElement('button');
           removeBtn.className = 'chip-remove';
           removeBtn.textContent = '×';
-          removeBtn.title = 'Entfernen';
+          removeBtn.title = 'Remove';
           removeBtn.addEventListener('click', () => {
             bindings.splice(index, 1);
             saveMapping();
@@ -482,10 +482,10 @@
     renderMappingList();
   });
 
-  // ---------- Tastatur-Shortcuts & Fernbedienungs-Tasten ----------
+  // ---------- Keyboard shortcuts & remote control keys ----------
   document.addEventListener('keydown', (e) => {
     const isFormField = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
-    logDebug(`Tastatur-Event: code=${e.code} key=${e.key}${isFormField ? ' (Eingabefeld, ignoriert)' : ''}`);
+    logDebug(`Keyboard event: code=${e.code} key=${e.key}${isFormField ? ' (form field, ignored)' : ''}`);
     if (isFormField) return;
     if (ignoredCodes.has(e.code)) return;
 
@@ -495,7 +495,7 @@
       return;
     }
 
-    lastKeyHint.textContent = `Letzter erkannter Tastendruck: ${e.code}`;
+    lastKeyHint.textContent = `Last detected keypress: ${e.code}`;
 
     const actionId = findActionByBinding((b) => b.type === 'key' && b.code === e.code);
     if (actionId) {
@@ -504,15 +504,15 @@
     }
   });
 
-  // ---------- Gamepad-Fernbedienung ----------
-  // Manche BLE-Fernbedienungen melden sich nicht als Tastatur, sondern als
-  // generisches HID-Gerät, das Chrome/Edge stattdessen über die Gamepad-API
-  // sichtbar macht (erst nach dem ersten Tastendruck am Gerät).
+  // ---------- Gamepad remote control ----------
+  // Some BLE remotes don't identify as a keyboard, but as a generic HID
+  // device that Chrome/Edge instead exposes via the Gamepad API (only after
+  // the first button press on the device).
   window.addEventListener('gamepadconnected', (e) => {
-    logDebug(`Gamepad verbunden: „${e.gamepad.id}“`);
+    logDebug(`Gamepad connected: "${e.gamepad.id}"`);
   });
   window.addEventListener('gamepaddisconnected', (e) => {
-    logDebug(`Gamepad getrennt: „${e.gamepad.id}“`);
+    logDebug(`Gamepad disconnected: "${e.gamepad.id}"`);
   });
 
   const lastGamepadButtonStates = new Map();
@@ -523,7 +523,7 @@
       const prev = lastGamepadButtonStates.get(pad.index) || [];
       pad.buttons.forEach((btn, i) => {
         if (btn.pressed && !prev[i]) {
-          logDebug(`Gamepad-Taste gedrückt: „${pad.id}“ Button ${i}`);
+          logDebug(`Gamepad button pressed: "${pad.id}" button ${i}`);
 
           if (listeningForAction) {
             assignToListeningAction({ type: 'gamepad', button: i });
@@ -542,38 +542,38 @@
   }
   requestAnimationFrame(pollGamepads);
 
-  // ---------- Diagnose: WebHID (nur Chrome/Edge, benötigt HTTPS oder localhost) ----------
+  // ---------- Diagnostics: WebHID (Chrome/Edge only, requires HTTPS or localhost) ----------
   if (!('hid' in navigator)) {
     connectHidBtn.disabled = true;
-    connectHidBtn.title = 'WebHID wird von diesem Browser/Kontext nicht unterstützt (Chrome/Edge über HTTPS oder localhost nötig).';
+    connectHidBtn.title = 'WebHID is not supported in this browser/context (Chrome/Edge over HTTPS or localhost required).';
   }
   connectHidBtn.addEventListener('click', async () => {
     if (!('hid' in navigator)) {
-      logDebug('WebHID nicht verfügbar (Browser oder kein sicherer Kontext – https/localhost nötig).');
+      logDebug('WebHID not available (browser or no secure context – https/localhost required).');
       return;
     }
     try {
       const devices = await navigator.hid.requestDevice({ filters: [] });
       if (!devices.length) {
-        logDebug('Kein HID-Gerät ausgewählt.');
+        logDebug('No HID device selected.');
         return;
       }
       for (const device of devices) {
         await device.open();
-        logDebug(`HID-Gerät verbunden: „${device.productName || 'unbekannt'}“ (vendorId=0x${device.vendorId.toString(16)}, productId=0x${device.productId.toString(16)})`);
+        logDebug(`HID device connected: "${device.productName || 'unknown'}" (vendorId=0x${device.vendorId.toString(16)}, productId=0x${device.productId.toString(16)})`);
         device.addEventListener('inputreport', (event) => {
           const bytes = Array.from(new Uint8Array(event.data.buffer))
             .map((b) => b.toString(16).padStart(2, '0'))
             .join(' ');
-          logDebug(`HID-Report reportId=${event.reportId}: ${bytes}`);
+          logDebug(`HID report reportId=${event.reportId}: ${bytes}`);
         });
       }
     } catch (err) {
-      logDebug(`HID-Fehler: ${err.message}`);
+      logDebug(`HID error: ${err.message}`);
     }
   });
 
-  // ---------- Raum wechseln ----------
+  // ---------- Switch room ----------
   applyRoomBtn.addEventListener('click', () => {
     const room = roomInput.value.trim() || 'default';
     currentRoom = room;

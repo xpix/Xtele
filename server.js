@@ -1,6 +1,6 @@
-// Einfacher Sync-Server: Statische Dateien + WebSocket-Relay pro "Raum".
-// Jeder Raum merkt sich den letzten Stand (Text + Scroll-Position), damit
-// neu verbundene Geräte sofort den aktuellen Zustand bekommen.
+// Simple sync server: static files + WebSocket relay per "room".
+// Each room remembers the latest state (text + scroll position) so that
+// newly connected devices immediately receive the current state.
 
 const express = require('express');
 const http = require('http');
@@ -31,7 +31,7 @@ wss.on('connection', (ws, req) => {
   room.clients.add(ws);
   ws.roomName = roomName;
 
-  // Aktuellen Stand an neu verbundenen Client senden
+  // send current state to the newly connected client
   ws.send(JSON.stringify({ type: 'init', text: room.text, scrollRatio: room.scrollRatio }));
 
   ws.on('message', (data) => {
@@ -49,10 +49,10 @@ wss.on('connection', (ws, req) => {
     } else if (msg.type === 'scroll' && typeof msg.ratio === 'number') {
       currentRoom.scrollRatio = Math.min(1, Math.max(0, msg.ratio));
     } else {
-      return; // unbekannter Nachrichtentyp ignorieren
+      return; // ignore unknown message type
     }
 
-    // an alle anderen Clients im selben Raum weiterleiten
+    // relay to all other clients in the same room
     for (const client of currentRoom.clients) {
       if (client !== ws && client.readyState === client.OPEN) {
         client.send(JSON.stringify(msg));
@@ -70,12 +70,12 @@ wss.on('connection', (ws, req) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Teleprompter-Server läuft auf http://localhost:${PORT}`);
+  console.log(`Teleprompter server running at http://localhost:${PORT}`);
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
     for (const net of nets[name] || []) {
       if (net.family === 'IPv4' && !net.internal) {
-        console.log(`  -> im Netzwerk erreichbar unter: http://${net.address}:${PORT}`);
+        console.log(`  -> reachable on the network at: http://${net.address}:${PORT}`);
       }
     }
   }

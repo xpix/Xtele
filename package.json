@@ -1,7 +1,7 @@
 {
   "name": "xtele-teleprompter",
   "version": "1.0.0",
-  "description": "Netzwerk-synchronisierter Teleprompter (Text- und Scroll-Sync über mehrere Browser/Geräte)",
+  "description": "Self-hosted, network-synced browser teleprompter with real-time text/scroll sync across devices, mirroring, and Bluetooth/USB/gamepad remote control support",
   "private": true,
   "main": "server.js",
   "scripts": {
