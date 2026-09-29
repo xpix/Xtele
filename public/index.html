@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Xtele Teleprompter</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <div class="panel-header">
+        <h1>Xtele Teleprompter</h1>
+        <div class="header-buttons">
+          <button id="fullscreenBtn" title="Vollbild">⛶</button>
+          <button id="togglePanelBtn" title="Bedienfeld ausblenden">⮜</button>
+        </div>
+      </div>
+
+      <section class="field">
+        <label for="roomInput">Raum / Gerätegruppe</label>
+        <div class="row">
+          <input id="roomInput" type="text" spellcheck="false" />
+          <button id="applyRoomBtn">Beitreten</button>
+        </div>
+        <p class="hint">Alle Geräte mit demselben Raumnamen werden synchronisiert. Diese Seite auf PC &amp; Fire Tablet mit gleichem Raumnamen öffnen.</p>
+        <p id="status" class="status disconnected">● nicht verbunden</p>
+      </section>
+
+      <section class="field">
+        <label for="fileInput">Text-Datei laden</label>
+        <input id="fileInput" type="file" accept=".txt,text/plain" />
+        <p id="loadedFileName" class="hint">Keine Datei geladen.</p>
+      </section>
+
+      <section class="field">
+        <label>Schrift &amp; Anzeige (nur lokal, nicht synchronisiert)</label>
+        <div class="row slider-row">
+          <span>Schriftgröße</span>
+          <input id="fontSizeSlider" type="range" min="16" max="120" value="48" />
+          <span id="fontSizeValue">48px</span>
+        </div>
+        <div class="row slider-row">
+          <span>Zeilenabstand</span>
+          <input id="lineHeightSlider" type="range" min="100" max="220" value="140" />
+          <span id="lineHeightValue">1.4</span>
+        </div>
+        <label class="checkbox">
+          <input id="mirrorCheckbox" type="checkbox" />
+          Text spiegeln (für Prompter-/Beamsplitter-Aufsatz)
+        </label>
+        <label class="checkbox">
+          <input id="flipVCheckbox" type="checkbox" />
+          Zusätzlich vertikal spiegeln
+        </label>
+        <label class="checkbox">
+          <input id="guideLineCheckbox" type="checkbox" checked />
+          Lesehilfslinie anzeigen
+        </label>
+      </section>
+
+      <section class="field">
+        <label>Auto-Scroll</label>
+        <div class="row slider-row">
+          <span>Geschwindigkeit</span>
+          <input id="speedSlider" type="range" min="2" max="200" value="40" />
+          <span id="speedValue">40 px/s</span>
+        </div>
+        <div class="row">
+          <button id="playBtn">▶ Start</button>
+          <button id="topBtn">⤒ Zum Anfang</button>
+        </div>
+      </section>
+
+      <section class="field">
+        <label>Fernbedienung</label>
+        <p class="hint">
+          Dein Desview-Remote wurde als generisches HID-Gerät erkannt (nicht als Tastatur, sondern über die Gamepad-API). Klicke unten bei einer Aktion auf „Zuweisen“ und drücke dann den gewünschten Knopf auf der Fernbedienung – Tastatur- <em>und</em> Gamepad-Tasten werden automatisch erkannt.
+        </p>
+        <div id="remoteMappingList" class="mapping-list"></div>
+        <div class="row">
+          <button id="resetMappingBtn">Zuordnung zurücksetzen</button>
+        </div>
+        <p id="lastKeyHint" class="hint">Letzter erkannter Tastendruck: –</p>
+      </section>
+
+      <section class="field">
+        <label>Fernbedienungs-Diagnose</label>
+        <p class="hint">
+          Kommt hier gar nichts an: Teste zuerst in einem normalen Textfeld (z. B. Notepad oder das Raum-Feld oben), ob beim Drücken überhaupt etwas erscheint. Kommt dort auch nichts an, sendet das Gerät vermutlich keine Standard-Tastatursignale, sondern nur sein eigenes Bluetooth-Profil an die Desview-App.
+        </p>
+        <div class="row">
+          <button id="connectHidBtn">Rohes HID-Gerät verbinden (Chrome, nur localhost/HTTPS)</button>
+        </div>
+        <div id="remoteDebugLog" class="debug-log"></div>
+      </section>
+
+    </aside>
+
+    <button id="showPanelBtn" title="Bedienfeld einblenden">⮞</button>
+    <button id="fullscreenFloatBtn" title="Vollbild">⛶</button>
+
+    <main id="stage">
+      <div id="guideLine"></div>
+      <div id="prompter">
+        <div id="prompterInner"><p class="empty-hint">Noch kein Text geladen. Öffne das Bedienfeld links und lade eine Textdatei.</p></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

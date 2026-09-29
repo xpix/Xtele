@@ -1,0 +1,14 @@
+{
+  "name": "xtele-teleprompter",
+  "version": "1.0.0",
+  "description": "Netzwerk-synchronisierter Teleprompter (Text- und Scroll-Sync über mehrere Browser/Geräte)",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.1"
+  }
+}
